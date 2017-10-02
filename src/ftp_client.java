@@ -6,6 +6,7 @@ import java.util.*;
 import java.text.*;
 import java.lang.*;
 import javax.swing.*;
+import java.net.*;
 class ftp_client { 
 
     public static void main(String argv[]) throws Exception {
@@ -48,7 +49,11 @@ class ftp_client {
 					
 					while(notEnd){
 						modifiedSentence = inData.readUTF();
-						// fixme 
+						System.out.println(modifiedSentence);
+						// fixme  note, add final string from server to trigger 'notEnd' being changed
+						if(modifiedSentence == null){
+							notEnd = false;
+						}
 					}
 				
 					welcomeData.close();
@@ -58,7 +63,86 @@ class ftp_client {
 				
 				else if(sentence.startsWith("retr: ")){
 					// fixme
+					port1 += 2;
+					ServerSocket serverRequest = new ServerSocket(port1);
+					Socket input = serverRequest.accept();
+					
+					DataInputStream stream = new DataInputStream(new BufferedInputStream(input.getInputStream()));
+					
+					
+					//FIXME possible issue with filenames and substring method
+					File save = new File(sentence.substring(6));
+					FileOutputStream saver = new FileOutputStream(sentence.substring(6));
+					
+					byte[] buffer = new byte[1024];
+					int bytes = 0;
+					
+					while((bytes = stream.read(buffer)) != -1){
+						saver.write(buffer);
+					}
+					
+					serverRequest.close();
+					saver.close();
+					input.close();
+					stream.close();
+					
 				}
+				
+				else if(sentence.startsWith("stor: ")){
+					port1 += 2;
+					
+					ServerSocket output = new ServerSocket(port1);
+					Socket client = output.accept();
+					Socket dataSocket= new Socket(serverName, port1);
+					try{
+						
+					
+						
+					DataOutputStream streamOutput = new DataOutputStream(dataSocket.getOutputStream());
+					FileInputStream taker = new FileInputStream(sentence.substring(6));
+					byte[] buffer = new byte[1024];
+					
+					streamOutput.writeBytes(sentence);
+					
+					
+					
+					
+					int bytes = 0;
+					
+					while((bytes = taker.read(buffer)) != -1){
+						streamOutput.write(buffer);
+					}
+					
+					taker.close();
+					streamOutput.close();
+					}catch(FileNotFoundException e){
+						System.out.println("Specified file was not found");
+					}
+					
+					client.close();
+					output.close();
+					dataSocket.close();
+					
+					
+				}
+				else if(sentence.startsWith("quit")){
+					
+					inFromUser.close();
+					ControlSocket.close();
+					outToServer.close();
+					inFromServer.close();
+					
+					clientgo = false;
+					
+				}
+				
+				
+				
+				
+				
+				
+				
+				
 			}
 		}
 	}
