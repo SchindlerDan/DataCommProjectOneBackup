@@ -38,6 +38,7 @@ class ftp_server {
 			
 
 			dataSocket.close();    
+			
 			System.out.println("Data Socket closed");
 			
 			}

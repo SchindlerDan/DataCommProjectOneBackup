@@ -15,6 +15,8 @@ class ftp_client {
         boolean isOpen = true;
         int number=1;
         boolean notEnd = true;
+        
+        
 		String statusCode;
 		boolean clientgo = true;
 	    
