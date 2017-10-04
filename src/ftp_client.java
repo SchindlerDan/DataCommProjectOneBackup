@@ -7,6 +7,13 @@ import java.text.*;
 import java.lang.*;
 import javax.swing.*;
 import java.net.*;
+import java.nio.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
+
+
 class ftp_client { 
 
     public static void main(String argv[]) throws Exception {
@@ -103,16 +110,24 @@ class ftp_client {
 					
 						
 					DataOutputStream streamOutput = new DataOutputStream(dataSocket.getOutputStream());
-					FileInputStream taker = new FileInputStream(sentence.substring(6));
+					
 					byte[] buffer = new byte[1024];
 					
+					//Sends the sentence (command) to the server
 					streamOutput.writeBytes(sentence);
 					
+					//gets the path for the file we want to send
+					Path path = Paths.get("./" + sentence.substring(6));
 					
+					File file = new File("./" + sentence.substring(6));
+					
+					FileInputStream taker = new FileInputStream(file);
 					
 					
 					int bytes = 0;
 					
+					//writes the bytes from our file into the byte array
+					buffer = Files.readAllBytes(path);
 					while((bytes = taker.read(buffer)) != -1){
 						streamOutput.write(buffer);
 					}
@@ -139,13 +154,6 @@ class ftp_client {
 					clientgo = false;
 					
 				}
-				
-				
-				
-				
-				
-				
-				
 				
 			}
 		}

@@ -32,10 +32,26 @@ class ftp_server {
 			
 			if(clientCommand.equals("list:")){ 
 				dataSocket = new Socket(connectionSocket.getInetAddress(), port);
-				DataOutputStream  dataOutToClient = 
-				new DataOutputStream(dataSocket.getOutputStream());
-				// FIXME 
-			
+				DataOutputStream  dataOutToClient = new DataOutputStream(dataSocket.getOutputStream());
+				//fixme
+				
+				File localStorage = new File("./");
+				File[] localFiles = localStorage.listFiles();
+				
+				String[] fileNames = new String[localFiles.length];
+				
+				for(int i = 0; i < localFiles.length; i++){
+					fileNames[i] = localFiles[i].getName();
+					dataOutToClient.writeBytes(fileNames[i]);
+				}
+				
+				byte[] buffer = new byte[1024];
+				
+				int bytes = 0;
+				
+				for(int i = 0; i < localFiles.length; i++){
+					dataOutToClient.write(buffer);
+				}
 
 			dataSocket.close();    
 			
