@@ -20,6 +20,8 @@ class ftp_client {
 	    
 		BufferedReader inFromUser = new BufferedReader(new InputStreamReader(System.in)); 
         sentence = inFromUser.readLine();
+        
+        
         StringTokenizer tokens = new StringTokenizer(sentence);
 
 		if(sentence.startsWith("connect")){

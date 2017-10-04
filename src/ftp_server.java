@@ -37,7 +37,7 @@ class ftp_server {
 				// FIXME 
 			
 
-			dataSocket.close();
+			dataSocket.close();    
 			System.out.println("Data Socket closed");
 			
 			}
