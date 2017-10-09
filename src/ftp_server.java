@@ -33,18 +33,20 @@ class ftp_server {
 
 			if (clientCommand.equals("list:")) {
 				dataSocket = new Socket(connectionSocket.getInetAddress(), port);
-				DataOutputStream dataOut = new DataOutputStream(new BufferedOutputStream(dataSocket.getOutputStream()));
+				DataOutputStream dataOut = new DataOutputStream(dataSocket.getOutputStream());
 				// begin new code.
 
 				File localStorage = new File("./");
 				File[] localFiles = localStorage.listFiles();
 
-				for (File f : localFiles)
-					dataOut.writeBytes(f.getName());
+				for (File f : localFiles) {
+					dataOut.writeBytes(f.getName() + '\n');
+					System.out.print(f.getName());
+				}
 
 				// Resume given code.
 				dataSocket.close();
-				dataOut.close();
+				//dataOut.close();
 				System.out.println("Data Socket closed");
 
 			}
