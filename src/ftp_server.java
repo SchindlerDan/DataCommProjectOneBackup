@@ -14,7 +14,6 @@ class ftp_server {
     	
 		String fromClient;
 		String clientCommand;
-		byte[] data;
 		Socket dataSocket;
 	
 		ServerSocket welcomeSocket = new ServerSocket(LISTEN_PORT);
@@ -36,21 +35,20 @@ class ftp_server {
 			
 			if(clientCommand.equals("list:")){ 
 				dataSocket = new Socket(connectionSocket.getInetAddress(), port);
-				DataOutputStream  dataOutToClient = new DataOutputStream(dataSocket.getOutputStream());
+				DataOutputStream  dataOut = new DataOutputStream(new BufferedOutputStream(dataSocket.getOutputStream()));
 				//begin new code.
 				
 				File localStorage = new File("./");
 				File[] localFiles = localStorage.listFiles();
 				
-//				String[] fileNames = new String[localFiles.length];
 				
 				for (File f:localFiles)
-					dataOutToClient.writeBytes(f.getName());
+					dataOut.writeBytes(f.getName());
 
 
 				//Resume given code.
 			dataSocket.close();    
-			
+			dataOut.close();
 			System.out.println("Data Socket closed");
 			
 			}
@@ -67,12 +65,25 @@ class ftp_server {
 				// begin new code.
 				
 				dataSocket = new Socket(connectionSocket.getInetAddress(), port);
-				DataOutputStream  dataOutToClient = new DataOutputStream(dataSocket.getOutputStream());
+				DataOutputStream  dataOut = new DataOutputStream(new BufferedOutputStream(dataSocket.getOutputStream()));
 							
 				
 				try{
 					String fileName=tokens.nextToken();
 					File f=new File(fileName);
+					
+					FileInputStream fileIn= new FileInputStream(f);
+					
+					byte[] fileBytes=new byte[(int) f.length()];
+					
+					
+					fileIn.read(fileBytes);
+					dataOut.write(fileBytes);
+					
+					fileIn.close();
+					dataOut.close();
+					System.out.println("Data Socket closed");
+					System.out.println("Data Stream closed");
 					
 					
 				}catch(Exception e){
