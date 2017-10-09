@@ -21,12 +21,15 @@ class ftp_client {
         String modifiedSentence; 
         boolean isOpen = true;
         int number=1;
+        final int commandPort = 6603, dataPort = 6605;
         boolean notEnd = true;
         
         
 		String statusCode;
 		boolean clientgo = true;
 	    
+		System.out.print("Enter a command: ");
+		
 		BufferedReader inFromUser = new BufferedReader(new InputStreamReader(System.in)); 
         sentence = inFromUser.readLine();
         
@@ -36,46 +39,43 @@ class ftp_client {
 		if(sentence.startsWith("connect")){
 			String serverName = tokens.nextToken(); // pass the connect command
 			serverName = tokens.nextToken();
-			int port1 = Integer.parseInt(tokens.nextToken());
+			//int port1 = Integer.parseInt(tokens.nextToken());
 			System.out.println("You are connected to " + serverName);
 			
-			Socket ControlSocket= new Socket(serverName, port1);
+			Socket ControlSocket= new Socket(serverName, commandPort);
 			
 			while(isOpen && clientgo){
 			  
 				DataOutputStream outToServer = new DataOutputStream(ControlSocket.getOutputStream()); 
 				DataInputStream inFromServer = new DataInputStream(new BufferedInputStream(ControlSocket.getInputStream()));
-				  
+				System.out.print("Enter a command: ");
 				sentence = inFromUser.readLine();
 			   
 				if(sentence.equals("list:")){
 					
-					port1 = port1 +2;
-					System.out.println(port1);
-					ServerSocket welcomeData = new ServerSocket(port1);
-					outToServer.writeBytes(port1 + " " + sentence + " " + '\n');
+					//port1 = port1 +2;
+					//System.out.println(dataPort);
+					ServerSocket welcomeData = new ServerSocket(dataPort);
+					outToServer.writeBytes(dataPort + " " + sentence + " " + '\n');
 
 					Socket dataSocket = welcomeData.accept(); 
-					DataInputStream inData = new DataInputStream(new BufferedInputStream(dataSocket.getInputStream()));
-					
-					while(notEnd){
-						modifiedSentence = inData.readUTF();
-						System.out.println(modifiedSentence);
-						// fixme  note, add final string from server to trigger 'notEnd' being changed
-						if(modifiedSentence == null){
-							notEnd = false;
+					BufferedReader inData = new BufferedReader(new InputStreamReader(dataSocket.getInputStream()));
+					String string;
+					while((string = inData.readLine()) != null){
+						System.out.println(string);
+						
 						}
-					}
+					
 				
 					welcomeData.close();
 					dataSocket.close();
 					System.out.println("\nWhat would you like to do next: \n retr: file.txt || stor: file.txt  || close");
 				}
 				
-				else if(sentence.startsWith("retr: ")){
+				else if(sentence.startsWith("retr")){
 					// fixme
-					port1 += 2;
-					ServerSocket serverRequest = new ServerSocket(port1);
+					//port1 += 2;
+					ServerSocket serverRequest = new ServerSocket(dataPort);
 					Socket input = serverRequest.accept();
 					
 					DataInputStream stream = new DataInputStream(new BufferedInputStream(input.getInputStream()));
@@ -99,12 +99,12 @@ class ftp_client {
 					
 				}
 				
-				else if(sentence.startsWith("stor: ")){
-					port1 += 2;
+				else if(sentence.startsWith("stor")){
+					//port1 += 2;
 					
-					ServerSocket output = new ServerSocket(port1);
+					ServerSocket output = new ServerSocket(dataPort);
 					Socket client = output.accept();
-					Socket dataSocket= new Socket(serverName, port1);
+					Socket dataSocket= new Socket(serverName, dataPort);
 					try{
 						
 					
