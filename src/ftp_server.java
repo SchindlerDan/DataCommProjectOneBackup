@@ -3,17 +3,21 @@
 import java.io.*; 
 import java.net.*;
 import java.util.*;
-// fixme
+//fixme
 class ftp_server {
+	public static final int LISTEN_PORT=6603;
+	public static final int COMMAND_PORT=6605;
+
+
     public static void main(String argv[]) throws Exception {
 
-
+    	
 		String fromClient;
 		String clientCommand;
 		byte[] data;
 		Socket dataSocket;
 	
-		ServerSocket welcomeSocket = new ServerSocket(12000);
+		ServerSocket welcomeSocket = new ServerSocket(LISTEN_PORT);
 		String frstln;
 	  
 		while(true){
@@ -33,35 +37,51 @@ class ftp_server {
 			if(clientCommand.equals("list:")){ 
 				dataSocket = new Socket(connectionSocket.getInetAddress(), port);
 				DataOutputStream  dataOutToClient = new DataOutputStream(dataSocket.getOutputStream());
-				//fixme
+				//begin new code.
 				
 				File localStorage = new File("./");
 				File[] localFiles = localStorage.listFiles();
 				
-				String[] fileNames = new String[localFiles.length];
+//				String[] fileNames = new String[localFiles.length];
 				
-				for(int i = 0; i < localFiles.length; i++){
-					fileNames[i] = localFiles[i].getName();
-					dataOutToClient.writeBytes(fileNames[i]);
-				}
-				
-				byte[] buffer = new byte[1024];
-				
-				int bytes = 0;
-				
-				for(int i = 0; i < localFiles.length; i++){
-					dataOutToClient.write(buffer);
-				}
+				for (File f:localFiles)
+					dataOutToClient.writeBytes(f.getName());
 
+
+				//Resume given code.
 			dataSocket.close();    
 			
 			System.out.println("Data Socket closed");
 			
 			}
-			// fixme
-			 
+			//begin new code.
+
+			
+			
+			
+			
+			
+			
+			//end new code. 
 			if(clientCommand.equals("retr:")){
-				// fixme
+				// begin new code.
+				
+				dataSocket = new Socket(connectionSocket.getInetAddress(), port);
+				DataOutputStream  dataOutToClient = new DataOutputStream(dataSocket.getOutputStream());
+							
+				
+				try{
+					String fileName=tokens.nextToken();
+					File f=new File(fileName);
+					
+					
+				}catch(Exception e){
+					e.printStackTrace(System.out);
+				}
+				
+				
+				
+				//end new code.
 			}
 		}
     }
