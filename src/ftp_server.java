@@ -10,19 +10,42 @@ class ftp_server {
 
 	public static void main(String argv[]) throws Exception {
 
-		String fromClient;
-		String clientCommand;
-		Socket dataSocket;
+		ServerSocket welcomeSocket;
 
-		ServerSocket welcomeSocket = new ServerSocket(LISTEN_PORT);
-		String frstln;
+		
+		welcomeSocket = new ServerSocket(LISTEN_PORT);
+		
 
-		while (true) {
-			Socket connectionSocket = welcomeSocket.accept();
-	while(!connectionSocket.isClosed()) {		//This is where multithreading goes
-			BufferedReader inFromClient = new BufferedReader(new InputStreamReader(connectionSocket.getInputStream()));
- 
-			fromClient = inFromClient.readLine();
+		 do {
+			Socket connectionSocket;
+			
+				connectionSocket = welcomeSocket.accept();
+			
+			ClientHandler handler = new ClientHandler(connectionSocket);
+			handler.start();
+			
+		}while (true);
+		}
+}
+	class ClientHandler extends Thread{
+		private Socket dataSocket;
+		private Socket connectionSocket;
+		private String fromClient;
+		private String clientCommand;
+		private String frstln;
+		
+		public ClientHandler(Socket socket) {
+			connectionSocket = socket;
+		}
+			public void run() {
+				try {
+				BufferedReader inFromClient;
+				
+			 inFromClient = new BufferedReader(new InputStreamReader(connectionSocket.getInputStream()));
+			
+			
+				fromClient = inFromClient.readLine();
+			
 
 			StringTokenizer tokens = new StringTokenizer(fromClient);
 
@@ -86,11 +109,60 @@ class ftp_server {
 				}
 
 				// end new code.
-			} else if(clientCommand.equals("quit")) {
+			} if (clientCommand.equals("stor:")) {
+				boolean flag = true;
+				dataSocket = new Socket(connectionSocket.getInetAddress(), port);
+				DataInputStream dataIn = new DataInputStream((dataSocket.getInputStream()));
+				DataOutputStream dataOut = new DataOutputStream((dataSocket.getOutputStream()));
+				
+				
+				String fileName = tokens.nextToken();
+				//FIXME possible issue with filenames and substring method
+				File save = new File("./ServerFiles/" + fileName);
+				
+				
+									
+					//BufferedReader br = new BufferedReader( new FileReader(save.getName()));
+					if(!save.createNewFile()) {
+						
+					dataOut.writeInt(350);
+					flag = dataIn.readBoolean();
+					
+					} else
+					{
+						dataOut.writeInt(200);
+					}
+					System.out.println(flag);
+					if(flag){
+
+			
+				FileOutputStream saver = new FileOutputStream(save);
+
+				byte[] buffer = new byte[1024];
+				int bytes = 0;
+				while((bytes = dataIn.read(buffer)) != -1){
+					saver.write(buffer, 0, bytes); 
+				}
+				
+				System.out.println("File \"" + save.getName() + "\" has been retrieved");
+				saver.close();
+				}
+				//br.close();
+				dataIn.close();
+				dataOut.close();
+				dataSocket.close();
+				}
+			
+			 if(clientCommand.equals("quit")) {
+			
 				connectionSocket.close();
 			}
-}
+			 }catch (Exception e) {
+			 }
+
 
 		}
 	}
-}
+	
+	
+

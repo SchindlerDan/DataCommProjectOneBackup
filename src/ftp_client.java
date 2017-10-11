@@ -84,13 +84,13 @@ class ftp_client {
 					int code = stream.readInt();
 					if(code == 404) {
 						System.out.println("File Not Found");
-					}System.out.print("before creation");
+					}
 					//FIXME possible issue with filenames and substring method
 					File save = new File("./Files/" + sentence.substring(6));
-					System.out.println("after creation");
+					
 					save.createNewFile();
 					if(code == 200) {
-						System.out.println("after if 1");
+						
 						BufferedReader br = new BufferedReader( new FileReader(save.getName()));
 						if(br.readLine() != null) {
 							
@@ -99,7 +99,7 @@ class ftp_client {
 							flag = false;
 						}
 						if(flag){
-System.out.println("after if 2");
+
 				
 					FileOutputStream saver = new FileOutputStream("./Files/" + sentence.substring(6));
 
@@ -119,48 +119,56 @@ System.out.println("after if 2");
 				
 				}
 				
-				else if(sentence.startsWith("stor")){
+				else if(sentence.startsWith("stor:")){
 					//port1 += 2;
-					
-					ServerSocket output = new ServerSocket(dataPort);
-					Socket client = output.accept();
-					Socket dataSocket= new Socket(serverName, dataPort);
+					ServerSocket serverRequest = new ServerSocket(dataPort);
+					outToServer.writeBytes(dataPort + " " + sentence + " " + '\n');
+					Socket server = serverRequest.accept();
 					try{
 						
 					
 						
-					DataOutputStream streamOutput = new DataOutputStream(dataSocket.getOutputStream());
+					DataOutputStream dataOut = new DataOutputStream((server.getOutputStream()));
+					DataInputStream dataIn = new DataInputStream((server.getInputStream()));
 					
 					byte[] buffer = new byte[1024];
 					
 					//Sends the sentence (command) to the server
-					streamOutput.writeBytes(sentence);
+					//dataOut.writeBytes(sentence);
 					
-					//gets the path for the file we want to send
-					Path path = Paths.get("./" + sentence.substring(6));
-					
-					File file = new File("./" + sentence.substring(6));
-					
-					FileInputStream taker = new FileInputStream(file);
-					
-					
-					int bytes = 0;
-					
-					//writes the bytes from our file into the byte array
-					buffer = Files.readAllBytes(path);
-					while((bytes = taker.read(buffer)) != -1){
-						streamOutput.write(buffer);
+					int found = dataIn.readInt();
+					if(found == 350) {
+						System.out.println("File already exists. Overwrite? (yes/no)");
+						if(inFromUser.readLine().toLowerCase().startsWith("no")) {
+							dataOut.writeBoolean(false);
+						} else {
+							dataOut.writeBoolean(true);
+						}
+						
 					}
+					//gets the path for the file we want to send
+					Path path = Paths.get("./Files/" + sentence.substring(6));
 					
-					taker.close();
-					streamOutput.close();
+					File file = new File("./Files/" + sentence.substring(6));
+					
+					FileInputStream fileIn = new FileInputStream(file);
+
+					byte[] fileBytes = new byte[(int) file.length()];
+
+					fileIn.read(fileBytes);
+					dataOut.write(fileBytes);
+
+					fileIn.close();
+					
+					
+					dataIn.close();
+					dataOut.close();
 					}catch(FileNotFoundException e){
 						System.out.println("Specified file was not found");
 					}
 					
-					client.close();
-					output.close();
-					dataSocket.close();
+					serverRequest.close();
+					server.close();
 					
 					
 				}
