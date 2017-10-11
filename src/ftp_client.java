@@ -72,31 +72,43 @@ class ftp_client {
 					System.out.println("\nWhat would you like to do next: \n retr: file.txt || stor: file.txt  || close");
 				}
 				
-				else if(sentence.startsWith("retr")){
+				else if(sentence.startsWith("retr:")){
 					// fixme
 					//port1 += 2;
 					ServerSocket serverRequest = new ServerSocket(dataPort);
+					outToServer.writeBytes(dataPort + " " + sentence + " " + '\n');
 					Socket input = serverRequest.accept();
 					
 					DataInputStream stream = new DataInputStream(new BufferedInputStream(input.getInputStream()));
-					
-					
+					int code = stream.readInt();
+					if(code == 404) {
+						System.out.println("File Not Found");
+					}
 					//FIXME possible issue with filenames and substring method
-					File save = new File(sentence.substring(6));
-					FileOutputStream saver = new FileOutputStream(sentence.substring(6));
+					File save = new File("./Files/" + sentence.substring(6));
+					if(code == 200) {
+						if(save.exists()) {
+					
+						System.out.println("File already exists. Overwrite? (yes/no)");
+						}
+						if(inFromUser.readLine().toLowerCase().startsWith("yes") || !save.exists()) {
+				
+					FileOutputStream saver = new FileOutputStream(save);
 					
 					byte[] buffer = new byte[1024];
 					int bytes = 0;
-					
 					while((bytes = stream.read(buffer)) != -1){
-						saver.write(buffer);
+						saver.write(buffer, 0, bytes); 
 					}
 					
-					serverRequest.close();
+					System.out.println("File \"" + save.getName() + "\" has been retrieved");
 					saver.close();
 					input.close();
+					}
+					}
 					stream.close();
-					
+					serverRequest.close();
+				
 				}
 				
 				else if(sentence.startsWith("stor")){
@@ -146,6 +158,8 @@ class ftp_client {
 				}
 				else if(sentence.startsWith("quit")){
 					
+
+					outToServer.writeBytes(dataPort + " quit " + '\n');
 					inFromUser.close();
 					ControlSocket.close();
 					outToServer.close();

@@ -19,9 +19,9 @@ class ftp_server {
 
 		while (true) {
 			Socket connectionSocket = welcomeSocket.accept();
-			
+	while(!connectionSocket.isClosed()) {		//This is where multithreading goes
 			BufferedReader inFromClient = new BufferedReader(new InputStreamReader(connectionSocket.getInputStream()));
-
+ 
 			fromClient = inFromClient.readLine();
 
 			StringTokenizer tokens = new StringTokenizer(fromClient);
@@ -56,13 +56,15 @@ class ftp_server {
 			if (clientCommand.equals("retr:")) {
 				// begin new code.
 
+				
 				dataSocket = new Socket(connectionSocket.getInetAddress(), port);
-				DataOutputStream dataOut = new DataOutputStream(new BufferedOutputStream(dataSocket.getOutputStream()));
-
+				DataOutputStream dataOut = new DataOutputStream(dataSocket.getOutputStream());
 				try {
 					String fileName = tokens.nextToken();
+					System.out.println(fileName);
 					File f = new File(fileName);
-
+					if(f.exists()) {
+						dataOut.writeInt(200);
 					FileInputStream fileIn = new FileInputStream(f);
 
 					byte[] fileBytes = new byte[(int) f.length()];
@@ -71,16 +73,24 @@ class ftp_server {
 					dataOut.write(fileBytes);
 
 					fileIn.close();
+					
+					
+					System.out.println("Data Stream closed");
+					} else
+
+						dataOut.writeInt(404);
 					dataOut.close();
 					System.out.println("Data Socket closed");
-					System.out.println("Data Stream closed");
-
 				} catch (Exception e) {
 					e.printStackTrace(System.out);
 				}
 
 				// end new code.
+			} else if(clientCommand.equals("quit")) {
+				connectionSocket.close();
 			}
+}
+
 		}
 	}
 }
