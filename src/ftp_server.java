@@ -37,6 +37,9 @@ class ClientHandler extends Thread {
 	}
 
 	public void run() {
+		boolean running = true;
+		while(running){
+		
 		try {
 			BufferedReader inFromClient;
 
@@ -147,8 +150,10 @@ class ClientHandler extends Thread {
 			if (clientCommand.equals("quit")) {
 
 				connectionSocket.close();
+				running = false;
 			}
 		} catch (Exception e) {
+		}
 		}
 
 	}
