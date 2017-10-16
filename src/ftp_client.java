@@ -88,7 +88,6 @@ class ftp_client {
 							System.out.println("File already exists. Overwrite? (yes/no)");
 							if (inFromUser.readLine().toLowerCase().startsWith("no"))
 								flag = false;
-							br.close();
 						}
 						if (flag) {
 
@@ -104,6 +103,7 @@ class ftp_client {
 							saver.close();
 							input.close();
 						}
+						br.close();
 					}
 					stream.close();
 					serverRequest.close();
