@@ -21,7 +21,7 @@ class ftp_client {
 		final int COMMAND_PORT = 6603, DATA_PORT = 6605;
 		boolean clientgo = true;
 
-		System.out.print("Enter a command: ");
+		System.out.println("Enter the IP of your desired server: ");
 
 		BufferedReader inFromUser = new BufferedReader(new InputStreamReader(System.in));
 		sentence = inFromUser.readLine();
@@ -41,6 +41,11 @@ class ftp_client {
 				DataOutputStream outToServer = new DataOutputStream(ControlSocket.getOutputStream());
 				DataInputStream inFromServer = new DataInputStream(
 						new BufferedInputStream(ControlSocket.getInputStream()));
+				System.out.println("Possible Commands Include:");
+				System.out.println("\tlist:\n\t\tLists All Available Files on the Server.");
+				System.out.println("\tretr: <fileName>\n\t\tRetrieves a Specific File From the Server.");
+				System.out.println("\tstor: <fileName>\n\t\tStores/Sends a Specified File (by name) to the Server to Store.");
+				System.out.println("\tquit:\n\t\tEnds the Connection and Exits the Program.");
 				System.out.print("Enter a command: ");
 				sentence = inFromUser.readLine();
 
