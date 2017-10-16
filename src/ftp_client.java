@@ -15,7 +15,7 @@ import java.nio.file.Files;
 
 class ftp_client {
 
-	private void printInfo(){
+	private static void printInfo(){
 
 				System.out.println("Possible Commands Include:");
 				System.out.println("\tlist:\n\t\tLists All Available Files on the Server.");
@@ -89,7 +89,6 @@ class ftp_client {
 					if (code == 404) {
 						System.out.println("404 ERROR: File Not Found");
 					}
-					// FIXME possible issue with filenames and substring method
 					String fName=sentence.substring(6);
 					File save = new File("./Files/" + fName);
 					

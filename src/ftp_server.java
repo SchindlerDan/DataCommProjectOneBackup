@@ -17,7 +17,7 @@ class ftp_server {
 			Socket connectionSocket;
 
 			connectionSocket = welcomeSocket.accept();
-
+			
 			ClientHandler handler = new ClientHandler(connectionSocket);
 			handler.start();
 
@@ -41,6 +41,7 @@ class ClientHandler extends Thread {
 		while(running){
 		
 		try {
+			System.out.println("Connection Established.");
 			BufferedReader inFromClient;
 
 			inFromClient = new BufferedReader(new InputStreamReader(connectionSocket.getInputStream()));
@@ -72,15 +73,12 @@ class ClientHandler extends Thread {
 				System.out.println("Data Socket closed");
 
 			}
-			// begin new code.
 
-			// end new code.
 			if (clientCommand.equals("retr:")) {
-				// begin new code.
-
 				dataSocket = new Socket(connectionSocket.getInetAddress(), port);
 				DataOutputStream dataOut = new DataOutputStream(dataSocket.getOutputStream());
 				try {
+					System.out.println("Client is Requesting Files.");
 					String fileName = tokens.nextToken();
 					System.out.println(fileName);
 					File f = new File(fileName);
@@ -104,8 +102,6 @@ class ClientHandler extends Thread {
 				} catch (Exception e) {
 					e.printStackTrace(System.out);
 				}
-
-				// end new code.
 			}
 			if (clientCommand.equals("stor:")) {
 				boolean flag = true;
@@ -114,9 +110,8 @@ class ClientHandler extends Thread {
 				DataOutputStream dataOut = new DataOutputStream((dataSocket.getOutputStream()));
 
 				String fileName = tokens.nextToken();
-				// FIXME possible issue with filenames and substring method
 				File save = new File("./ServerFiles/" + fileName);
-
+				System.out.println("Recieving File: "+fileName+" From Client");
 				// BufferedReader br = new BufferedReader( new
 				// FileReader(save.getName()));
 				if (!save.createNewFile()) {
