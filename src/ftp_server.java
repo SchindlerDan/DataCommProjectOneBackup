@@ -59,7 +59,7 @@ class ftp_server {
 				DataOutputStream dataOut = new DataOutputStream(dataSocket.getOutputStream());
 				// begin new code.
 
-				File localStorage = new File("./");
+				File localStorage = new File("./ServerFiles");
 				File[] localFiles = localStorage.listFiles();
 
 				for (File f : localFiles) {
