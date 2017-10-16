@@ -55,7 +55,7 @@ class ClientHandler extends Thread {
 				DataOutputStream dataOut = new DataOutputStream(dataSocket.getOutputStream());
 				// begin new code.
 
-				File localStorage = new File("./ServerFiles");
+				File localStorage = new File("./ServerFiles"); 
 				File[] localFiles = localStorage.listFiles();
 
 				for (File f : localFiles) {
