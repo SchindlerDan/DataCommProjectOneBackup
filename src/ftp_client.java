@@ -32,7 +32,7 @@ class ftp_client {
 		final int COMMAND_PORT = 6603, DATA_PORT = 6605;
 		boolean clientgo = true;
 
-		System.out.println("Enter the IP of your desired server: ");
+		System.out.println("Enter the IP of your desired server: Ex. connect <IP>");
 
 		BufferedReader inFromUser = new BufferedReader(new InputStreamReader(System.in));
 		sentence = inFromUser.readLine();
@@ -95,9 +95,8 @@ class ftp_client {
 					save.createNewFile();
 					if (code == 200) {
 
-						BufferedReader br = new BufferedReader(new FileReader(save.getName()));
-						if (br.readLine() != null) {
-
+						if (save.exists()) {
+							
 							System.out.println("File already exists. Overwrite? (yes/no)");
 							if (inFromUser.readLine().toLowerCase().startsWith("no"))
 								flag = false;
@@ -130,7 +129,6 @@ class ftp_client {
 							saver.close();
 							input.close();
 						}
-						br.close();
 					}
 					stream.close();
 					serverRequest.close();
@@ -182,7 +180,9 @@ class ftp_client {
 					} catch (FileNotFoundException e) {
 						System.out.println("Specified file was not found");
 					}
-
+					System.out.println("File Transfer Success");
+					printInfo();
+					System.out.print("Enter a Command: ");
 					serverRequest.close();
 					server.close();
 

@@ -19,6 +19,7 @@ class ftp_server {
 			connectionSocket = welcomeSocket.accept();
 			
 			ClientHandler handler = new ClientHandler(connectionSocket);
+			System.out.println("Connection Established.");
 			handler.start();
 
 		} while (true);
@@ -41,7 +42,6 @@ class ClientHandler extends Thread {
 		while(running){
 		
 		try {
-			System.out.println("Connection Established.");
 			BufferedReader inFromClient;
 
 			inFromClient = new BufferedReader(new InputStreamReader(connectionSocket.getInputStream()));
@@ -81,7 +81,7 @@ class ClientHandler extends Thread {
 					System.out.println("Client is Requesting Files.");
 					String fileName = tokens.nextToken();
 					System.out.println(fileName);
-					File f = new File(fileName);
+					File f = new File("./ServerFiles/"+fileName);
 					if (f.exists()) {
 						dataOut.writeInt(200);
 						FileInputStream fileIn = new FileInputStream(f);
@@ -140,6 +140,7 @@ class ClientHandler extends Thread {
 				dataIn.close();
 				dataOut.close();
 				dataSocket.close();
+
 			}
 
 			if (clientCommand.equals("quit")) {
